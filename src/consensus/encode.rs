@@ -445,6 +445,54 @@ impl Encodable for VarInt {
     }
 }
 
+use crate::Block;
+use crate::BlockHeader;
+
+impl crate::consensus::Encodable for Block {
+    #[inline]
+    fn consensus_encode<R: crate::io::Write + ?Sized>(
+        &self,
+        r: &mut R,
+    ) -> Result<usize, crate::io::Error> {
+        let mut len = 0;
+        len += self.header.consensus_encode(r)?;
+        len += self.txdata.consensus_encode(r)?;
+        Ok(len)
+    }
+}
+
+impl Decodable for Block {
+    #[inline]
+    fn consensus_decode<R: io::Read + ?Sized>(r: &mut R) -> Result<Self, Error> {
+        let header = BlockHeader::consensus_decode(r)?;
+
+        const VERSION_FLAG_AUXPOW: i32 = 1 << 8;
+        if header.version & VERSION_FLAG_AUXPOW != 0 {
+            let _parent_coinbase_tx = Transaction::consensus_decode(r)?;
+
+            let _parent_blockhash = BlockHash::consensus_decode(r)?;
+
+            let _coinbase_merkle_branch_len = VarInt::consensus_decode(r)?;
+            for _ in 0.. _coinbase_merkle_branch_len.0 {
+                let _coinbase_merkle_branch_hash = BlockHash::consensus_decode(r)?;
+            }
+            let _coinbase_merkle_branch_size_mask = i32::consensus_decode(r)?;
+
+            let _blockchain_merkle_branch_len = VarInt::consensus_decode(r)?;
+            for _ in 0.. _blockchain_merkle_branch_len.0 {
+                let _blockchain_merkle_branch_hash = BlockHash::consensus_decode(r)?;
+            }
+            let _blockchain_merkle_branch_size_mask = i32::consensus_decode(r)?;
+
+            let _parent_block_header = BlockHeader::consensus_decode(r)?;
+        }
+
+        let txdata = Vec::<Transaction>::consensus_decode(r)?;
+        
+        Ok(Block { header, txdata })
+    }
+}
+
 impl Decodable for VarInt {
     #[inline]
     fn consensus_decode<R: io::Read + ?Sized>(r: &mut R) -> Result<Self, Error> {

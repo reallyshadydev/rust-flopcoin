@@ -137,7 +137,9 @@ impl ColdStorage {
     }
 
     /// Returns the fingerprint for the master extended public key.
-    fn master_fingerprint(&self) -> Fingerprint { self.master_xpub.fingerprint() }
+    fn master_fingerprint(&self) -> Fingerprint {
+        self.master_xpub.fingerprint()
+    }
 
     /// Signs `psbt` with this signer.
     fn sign_psbt<C: Signing>(&self, secp: &Secp256k1<C>, mut psbt: Psbt) -> Result<Psbt> {
@@ -340,35 +342,51 @@ enum Error {
 }
 
 impl std::error::Error for Error {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{:?}", self) }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 impl From<bip32::Error> for Error {
-    fn from(e: bip32::Error) -> Error { Error::Bip32(e) }
+    fn from(e: bip32::Error) -> Error {
+        Error::Bip32(e)
+    }
 }
 
 impl From<psbt::Error> for Error {
-    fn from(e: psbt::Error) -> Error { Error::Psbt(e) }
+    fn from(e: psbt::Error) -> Error {
+        Error::Psbt(e)
+    }
 }
 
 impl From<SighashError> for Error {
-    fn from(e: SighashError) -> Error { Error::PsbtSighash(e) }
+    fn from(e: SighashError) -> Error {
+        Error::PsbtSighash(e)
+    }
 }
 
 impl From<hex::Error> for Error {
-    fn from(e: hex::Error) -> Error { Error::Hex(e) }
+    fn from(e: hex::Error) -> Error {
+        Error::Hex(e)
+    }
 }
 
 impl From<address::Error> for Error {
-    fn from(e: address::Error) -> Error { Error::Address(e) }
+    fn from(e: address::Error) -> Error {
+        Error::Address(e)
+    }
 }
 
 impl From<ParseAmountError> for Error {
-    fn from(e: ParseAmountError) -> Error { Error::ParseAmount(e) }
+    fn from(e: ParseAmountError) -> Error {
+        Error::ParseAmount(e)
+    }
 }
 
 /// This module implements signing a PSBT. It is based on code in `rust-miniscript` with a bit of a
@@ -589,11 +607,15 @@ mod psbt_sign {
     }
 
     impl From<sighash::Error> for SighashError {
-        fn from(e: sighash::Error) -> Self { SighashError::SighashComputation(e) }
+        fn from(e: sighash::Error) -> Self {
+            SighashError::SighashComputation(e)
+        }
     }
 
     impl From<EcdsaSigError> for SighashError {
-        fn from(e: EcdsaSigError) -> Self { SighashError::EcdsaSig(e) }
+        fn from(e: EcdsaSigError) -> Self {
+            SighashError::EcdsaSig(e)
+        }
     }
 
     #[cfg(feature = "std")]
